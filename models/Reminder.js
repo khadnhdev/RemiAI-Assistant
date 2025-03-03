@@ -42,12 +42,26 @@ class Reminder {
   }
 
   static getRecipientsByReminderId(reminderId, callback) {
-    const sql = `
-      SELECT r.* FROM recipients r
-      JOIN reminder_recipients rr ON r.id = rr.recipient_id
-      WHERE rr.reminder_id = ? AND rr.is_active = 1
-    `;
-    db.all(sql, [reminderId], callback);
+    // Lấy recipient_id từ reminder
+    this.getById(reminderId, (err, reminder) => {
+      if (err) {
+        return callback(err);
+      }
+      
+      if (!reminder || !reminder.recipient_id) {
+        return callback(null, []);
+      }
+      
+      // Lấy thông tin người nhận
+      db.get('SELECT * FROM recipients WHERE id = ?', [reminder.recipient_id], (err, recipient) => {
+        if (err) {
+          return callback(err);
+        }
+        
+        // Trả về dưới dạng mảng để tương thích với code hiện tại
+        callback(null, recipient ? [recipient] : []);
+      });
+    });
   }
 
   static create(reminderData, callback) {

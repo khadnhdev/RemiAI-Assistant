@@ -297,6 +297,26 @@ class ReminderController {
   }
 
   triggerReminder(req, res) {
+    console.log('Đang gửi email cho reminder ID:', req.params.id);
+    
+    // Debug để kiểm tra cấu trúc bảng
+    db.get("SELECT sql FROM sqlite_master WHERE type='table' AND name='reminder_recipients'", (err, result) => {
+      if (err) {
+        console.error('Lỗi khi kiểm tra bảng reminder_recipients:', err);
+      } else {
+        console.log('Cấu trúc bảng reminder_recipients:', result ? result.sql : 'Bảng không tồn tại');
+      }
+      
+      // Kiểm tra thông tin người nhận
+      db.get("SELECT recipient_id FROM reminders WHERE id = ?", [req.params.id], (err, reminder) => {
+        if (err) {
+          console.error('Lỗi khi kiểm tra thông tin người nhận:', err);
+        } else {
+          console.log('Thông tin người nhận của reminder này:', reminder);
+        }
+      });
+    });
+    
     schedulerService.triggerReminderNow(req.params.id)
       .then(results => {
         req.flash('success_msg', `Đã gửi email tới ${results.successful} người nhận thành công. (Thất bại: ${results.failed})`);

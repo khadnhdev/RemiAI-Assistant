@@ -137,7 +137,7 @@ class SchedulerService {
 
   // Method to manually trigger a reminder
   triggerReminderNow(reminderId) {
-    return emailService.sendReminderEmails(reminderId);
+    return emailService.sendDirectEmail(reminderId);
   }
 }
 

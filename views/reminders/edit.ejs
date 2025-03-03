@@ -144,7 +144,16 @@
           
           <input type="hidden" id="schedule" name="schedule" value="<%= reminder.schedule %>">
           
-          <button type="submit" class="btn btn-primary">Cập nhật nhắc nhở</button>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Cập nhật nhắc nhở</button>
+            <a href="/reminders" class="btn btn-secondary">Hủy</a>
+            
+            <form action="/reminders/trigger/<%= reminder.id %>" method="POST" class="ms-auto d-inline">
+              <button type="submit" class="btn btn-warning" onclick="return confirm('Bạn có chắc chắn muốn gửi nhắc nhở này ngay bây giờ?')">
+                <i class="fas fa-paper-plane me-1"></i> Gửi ngay
+              </button>
+            </form>
+          </div>
         </form>
       </div>
     </div>

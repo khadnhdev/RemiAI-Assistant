@@ -84,6 +84,11 @@
                       <a href="/reminders/edit/<%= reminder.id %>" class="btn btn-sm btn-info">
                         <i class="fas fa-edit"></i>
                       </a>
+                      <form action="/reminders/trigger/<%= reminder.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-warning" title="Gửi ngay">
+                          <i class="fas fa-paper-plane"></i>
+                        </button>
+                      </form>
                       <form action="/reminders/delete/<%= reminder.id %>" method="POST" class="d-inline delete-confirm">
                         <button type="submit" class="btn btn-sm btn-danger">
                           <i class="fas fa-trash"></i>
@@ -103,4 +108,28 @@
       </div>
     </div>
   </div>
-</div> 
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Xác nhận trước khi xóa
+    const deleteButtons = document.querySelectorAll('.delete-confirm');
+    deleteButtons.forEach(form => {
+      form.addEventListener('submit', function(e) {
+        if (!confirm('Bạn có chắc chắn muốn xóa nhắc nhở này?')) {
+          e.preventDefault();
+        }
+      });
+    });
+    
+    // Xác nhận trước khi gửi ngay
+    const triggerButtons = document.querySelectorAll('form[action^="/reminders/trigger/"]');
+    triggerButtons.forEach(form => {
+      form.addEventListener('submit', function(e) {
+        if (!confirm('Bạn có chắc chắn muốn gửi nhắc nhở này ngay bây giờ?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  });
+</script> 

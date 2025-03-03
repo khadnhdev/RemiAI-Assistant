@@ -25,12 +25,17 @@ class EmailHistory {
 
   static create(history, callback) {
     const { reminder_id, recipient_id, subject, content, status } = history;
-    const sql = `
-      INSERT INTO email_history (reminder_id, recipient_id, subject, content, status)
-      VALUES (?, ?, ?, ?, ?)
-    `;
     
-    db.run(sql, [reminder_id, recipient_id, subject, content, status], function(err) {
+    const sql = `
+      INSERT INTO email_history (reminder_id, recipient_id, subject, status)
+      VALUES (?, ?, ?, ?)
+    `;
+    const params = [reminder_id, recipient_id, subject, status];
+    
+    db.run(sql, params, function(err) {
+      if (err) {
+        console.error('Error inserting into email_history:', err);
+      }
       callback(err, this.lastID);
     });
   }
