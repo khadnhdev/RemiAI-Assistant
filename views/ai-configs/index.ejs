@@ -38,6 +38,9 @@
                       <a href="/ai-configs/edit/<%= config.id %>" class="btn btn-sm btn-info">
                         <i class="fas fa-edit"></i>
                       </a>
+                      <a href="/ai-configs/edit-prompt/<%= config.id %>" class="btn btn-sm btn-warning">
+                        <i class="fas fa-code"></i>
+                      </a>
                       <form action="/ai-configs/delete/<%= config.id %>" method="POST" class="d-inline delete-confirm">
                         <button type="submit" class="btn btn-sm btn-danger">
                           <i class="fas fa-trash"></i>

@@ -106,6 +106,41 @@ class AIConfigController {
       res.redirect('/ai-configs');
     });
   }
+
+  getEditPrompt(req, res) {
+    const id = req.params.id;
+    AIConfig.getById(id, (err, aiConfig) => {
+      if (err) {
+        req.flash('error_msg', 'Lỗi khi tải cấu hình AI');
+        return res.redirect('/ai-configs');
+      }
+      res.render('ai-configs/edit-prompt', {
+        aiConfig,
+        title: 'Chỉnh sửa System Prompt'
+      });
+    });
+  }
+
+  updatePrompt(req, res) {
+    const id = req.params.id;
+    const { language, tone, length, style, system_prompt } = req.body;
+    
+    AIConfig.update(id, {
+      language,
+      tone, 
+      length,
+      style,
+      system_prompt
+    }, (err) => {
+      if (err) {
+        req.flash('error_msg', 'Lỗi khi cập nhật cấu hình');
+        return res.redirect(`/ai-configs/edit-prompt/${id}`);
+      }
+      
+      req.flash('success_msg', 'Đã cập nhật system prompt thành công');
+      res.redirect('/ai-configs');
+    });
+  }
 }
 
 module.exports = new AIConfigController(); 

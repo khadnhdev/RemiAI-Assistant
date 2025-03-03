@@ -53,7 +53,7 @@ router.post('/create', validateReminder, handleValidationErrors, reminderControl
 
 // Edit
 router.get('/edit/:id', reminderController.getEditReminder);
-router.post('/edit/:id', reminderController.postEditReminder);
+router.post('/edit/:id', reminderController.postUpdateReminder);
 
 // Delete
 router.delete('/:id', reminderController.deleteReminder);

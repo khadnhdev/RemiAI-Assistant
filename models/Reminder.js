@@ -157,14 +157,31 @@ class Reminder {
   }
 
   static delete(id, callback) {
-    // First delete from junction table
-    db.run('DELETE FROM reminder_recipients WHERE reminder_id = ?', [id], err => {
+    // Bắt đầu transaction
+    db.run('BEGIN TRANSACTION', (err) => {
       if (err) {
+        console.error('Lỗi khi bắt đầu transaction:', err);
         return callback(err);
       }
       
-      // Then delete the reminder
-      db.run('DELETE FROM reminders WHERE id = ?', [id], callback);
+      // Xóa lịch sử email trước
+      db.run('DELETE FROM email_history WHERE reminder_id = ?', [id], (err) => {
+        if (err) {
+          console.error('Lỗi khi xóa lịch sử email:', err);
+          return db.run('ROLLBACK', () => callback(err));
+        }
+        
+        // Xóa nhắc nhở
+        db.run('DELETE FROM reminders WHERE id = ?', [id], (err) => {
+          if (err) {
+            console.error('Lỗi khi xóa nhắc nhở:', err);
+            return db.run('ROLLBACK', () => callback(err));
+          }
+          
+          // Commit transaction nếu mọi thứ OK
+          db.run('COMMIT', callback);
+        });
+      });
     });
   }
 }

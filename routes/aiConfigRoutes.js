@@ -23,4 +23,8 @@ router.post('/delete/:id', (req, res) => {
   aiConfigController.deleteAIConfig(req, res);
 });
 
+// New routes
+router.get('/edit-prompt/:id', aiConfigController.getEditPrompt);
+router.post('/update-prompt/:id', aiConfigController.updatePrompt);
+
 module.exports = router; 

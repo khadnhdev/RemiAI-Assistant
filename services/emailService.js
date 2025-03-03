@@ -14,6 +14,9 @@ class EmailService {
         pass: process.env.EMAIL_PASS
       }
     });
+    
+    // Lấy email CC từ biến môi trường
+    this.ccEmail = process.env.CC_EMAIL;
   }
 
   async sendReminderEmails(reminderId) {
@@ -111,9 +114,14 @@ class EmailService {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
+      cc: this.ccEmail,
       subject,
       html: content
     };
+    
+    // Log thông tin gửi email
+    console.log('Gửi email đến:', to);
+    console.log('CC đến:', this.ccEmail);
     
     return this.transporter.sendMail(mailOptions);
   }
@@ -167,9 +175,13 @@ class EmailService {
           const mailOptions = {
             from: process.env.EMAIL_USER,
             to: reminder.recipient_email,
+            cc: this.ccEmail,
             subject: reminder.title,
             html: content
           };
+          
+          console.log('Gửi email trực tiếp đến:', reminder.recipient_email);
+          console.log('CC đến:', this.ccEmail);
           
           const info = await this.transporter.sendMail(mailOptions);
           console.log('Email đã được gửi:', info.messageId);

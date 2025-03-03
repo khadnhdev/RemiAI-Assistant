@@ -24,19 +24,43 @@ class EmailHistory {
   }
 
   static create(history, callback) {
-    const { reminder_id, recipient_id, subject, content, status } = history;
+    const { reminder_id, recipient_id, subject, content, status, error } = history;
     
-    const sql = `
-      INSERT INTO email_history (reminder_id, recipient_id, subject, status)
-      VALUES (?, ?, ?, ?)
-    `;
-    const params = [reminder_id, recipient_id, subject, status];
-    
-    db.run(sql, params, function(err) {
+    // Kiểm tra cấu trúc bảng trước khi insert
+    db.all("PRAGMA table_info(email_history)", (err, columns) => {
       if (err) {
-        console.error('Error inserting into email_history:', err);
+        return callback(err);
       }
-      callback(err, this.lastID);
+      
+      // Lấy danh sách tên cột
+      const columnNames = columns.map(col => col.name);
+      
+      // Tạo câu lệnh SQL động dựa trên các cột có sẵn
+      let fields = ['reminder_id', 'recipient_id', 'subject', 'status'];
+      let values = [reminder_id, recipient_id, subject, status];
+      
+      // Thêm các cột tùy chọn nếu tồn tại
+      if (columnNames.includes('error')) {
+        fields.push('error');
+        values.push(error);
+      }
+      
+      if (columnNames.includes('cc_email')) {
+        fields.push('cc_email');
+        values.push(process.env.CC_EMAIL);
+      }
+      
+      const sql = `
+        INSERT INTO email_history (${fields.join(', ')})
+        VALUES (${Array(fields.length).fill('?').join(', ')})
+      `;
+      
+      db.run(sql, values, function(err) {
+        if (err) {
+          console.error('Error inserting into email_history:', err);
+        }
+        callback(err, this.lastID);
+      });
     });
   }
 }

@@ -116,7 +116,7 @@
     const deleteButtons = document.querySelectorAll('.delete-confirm');
     deleteButtons.forEach(form => {
       form.addEventListener('submit', function(e) {
-        if (!confirm('Bạn có chắc chắn muốn xóa nhắc nhở này?')) {
+        if (!confirm('Bạn có chắc chắn muốn xóa nhắc nhở này? Mọi lịch sử gửi email cũng sẽ bị xóa.')) {
           e.preventDefault();
         }
       });

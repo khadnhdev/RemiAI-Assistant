@@ -7,7 +7,15 @@ class AIConfig {
   }
 
   static getById(id, callback) {
-    const sql = 'SELECT * FROM ai_configs WHERE id = ?';
+    const sql = `
+      SELECT id, name, description, prompt_template,
+             ai_model, tone, language,
+             length, style, system_prompt,
+             temperature, top_p, top_k, max_output_tokens
+      FROM ai_configs 
+      WHERE id = ?
+    `;
+    
     db.get(sql, [id], callback);
   }
 
@@ -32,18 +40,39 @@ class AIConfig {
 
   static update(id, config, callback) {
     const { 
-      name, description, prompt_template, ai_model, tone, language,
-      temperature, top_p, top_k, max_output_tokens
+      name, description, prompt_template, ai_model, 
+      tone, language, length, style, system_prompt,
+      temperature, top_p, top_k, max_output_tokens 
     } = config;
     
-    const sql = `UPDATE ai_configs SET 
-      name = ?, description = ?, prompt_template = ?, ai_model = ?, tone = ?, language = ?,
-      temperature = ?, top_p = ?, top_k = ?, max_output_tokens = ?,
-      updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+    // Kiểm tra xem có phải là cập nhật system prompt không
+    if (system_prompt !== undefined) {
+      const sql = `
+        UPDATE ai_configs 
+        SET language = ?, tone = ?, length = ?, style = ?, system_prompt = ?
+        WHERE id = ?
+      `;
+      
+      return db.run(sql, [language, tone, length, style, system_prompt, id], callback);
+    }
+    
+    // Cập nhật đầy đủ thông tin
+    const sql = `
+      UPDATE ai_configs 
+      SET name = ?, description = ?, prompt_template = ?, 
+          ai_model = ?, tone = ?, language = ?,
+          length = ?, style = ?, system_prompt = ?,
+          temperature = ?, top_p = ?, top_k = ?, 
+          max_output_tokens = ?
+      WHERE id = ?
+    `;
     
     db.run(sql, [
-      name, description, prompt_template, ai_model, tone, language,
-      temperature || 0.7, top_p || 0.95, top_k || 40, max_output_tokens || 1024,
+      name, description, prompt_template,
+      ai_model, tone, language,
+      length || 'Medium', style || 'Formal', system_prompt || '',
+      temperature, top_p, top_k,
+      max_output_tokens,
       id
     ], callback);
   }

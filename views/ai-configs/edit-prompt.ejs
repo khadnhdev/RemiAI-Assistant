@@ -1,1 +1,131 @@
- 
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1>Cấu hình System Prompt - <%= aiConfig.name %></h1>
+        <a href="/ai-configs" class="btn btn-secondary">Quay lại</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form action="/ai-configs/update-prompt/<%= aiConfig.id %>" method="POST">
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label class="form-label">Ngôn ngữ</label>
+                  <select class="form-select" name="language">
+                    <option value="Vietnamese" <%= aiConfig.language === 'Vietnamese' ? 'selected' : '' %>>Tiếng Việt</option>
+                    <option value="English" <%= aiConfig.language === 'English' ? 'selected' : '' %>>Tiếng Anh</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label class="form-label">Giọng điệu</label>
+                  <select class="form-select" name="tone">
+                    <option value="Professional" <%= aiConfig.tone === 'Professional' ? 'selected' : '' %>>Chuyên nghiệp</option>
+                    <option value="Friendly" <%= aiConfig.tone === 'Friendly' ? 'selected' : '' %>>Thân thiện</option>
+                    <option value="Formal" <%= aiConfig.tone === 'Formal' ? 'selected' : '' %>>Trang trọng</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label class="form-label">Độ dài</label>
+                  <select class="form-select" name="length">
+                    <option value="Short" <%= aiConfig.length === 'Short' ? 'selected' : '' %>>Ngắn</option>
+                    <option value="Medium" <%= aiConfig.length === 'Medium' ? 'selected' : '' %>>Vừa</option>
+                    <option value="Long" <%= aiConfig.length === 'Long' ? 'selected' : '' %>>Dài</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <label class="form-label">Phong cách</label>
+                  <select class="form-select" name="style">
+                    <option value="Formal" <%= aiConfig.style === 'Formal' ? 'selected' : '' %>>Trang trọng</option>
+                    <option value="Semi-formal" <%= aiConfig.style === 'Semi-formal' ? 'selected' : '' %>>Bán trang trọng</option>
+                    <option value="Informal" <%= aiConfig.style === 'Informal' ? 'selected' : '' %>>Thân mật</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">System Prompt</label>
+              <div class="alert alert-info">
+                <strong>Hướng dẫn:</strong>
+                <ul class="mb-0">
+                  <li>System prompt sẽ hướng dẫn AI cách tạo nội dung email</li>
+                  <li>Sử dụng các biến {language}, {tone}, {length}, {style} để tham chiếu đến cấu hình</li>
+                  <li>Đảm bảo yêu cầu định dạng HTML và cấu trúc email rõ ràng</li>
+                </ul>
+              </div>
+              <textarea class="form-control" name="system_prompt" rows="20" style="font-family: monospace;"><%= aiConfig.system_prompt %></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Xem trước cấu trúc HTML</label>
+              <div class="border p-3 bg-light">
+                <pre style="margin: 0;"><code class="html">
+&lt;div class="email-container" style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; color: #34495e; line-height: 1.6;"&gt;
+  &lt;div class="email-header" style="margin-bottom: 20px; color: #666;"&gt;
+    [Thông báo email tự động]
+  &lt;/div&gt;
+  
+  &lt;div class="email-body" style="margin-bottom: 30px;"&gt;
+    [Nội dung chính của email]
+  &lt;/div&gt;
+  
+  &lt;div class="email-footer" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;"&gt;
+    [Lời kết]
+    &lt;div class="signature" style="margin-top: 20px; color: #666;"&gt;
+      Remin AI - Hệ thống nhắc nhở tự động
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+                </code></pre>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Lưu cấu hình</button>
+              <button type="button" class="btn btn-warning" onclick="resetDefault()">Khôi phục mặc định</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Lưu trữ system prompt mặc định
+const defaultSystemPrompt = `Bạn là Remin AI, một trợ lý viết email tự động.
+Nhiệm vụ của bạn là tạo email với định dạng HTML đẹp và chuyên nghiệp theo các yêu cầu sau:
+
+Ngôn ngữ: {language}
+Giọng điệu: {tone}
+Độ dài: {length}
+Phong cách: {style}
+
+Hướng dẫn:
+1. Viết email hoàn chỉnh với nội dung cụ thể, không sử dụng merge tags hay placeholder
+2. Luôn bắt đầu bằng thông báo "Đây là email tự động từ hệ thống Remin AI"
+3. Sử dụng giọng điệu và ngôn ngữ phù hợp theo cấu hình
+4. Chữ ký cuối email luôn là "Remin AI - Hệ thống nhắc nhở tự động"
+
+[Cấu trúc HTML mặc định...]`;
+
+function resetDefault() {
+  if (confirm('Bạn có chắc muốn khôi phục system prompt về mặc định?')) {
+    document.querySelector('textarea[name="system_prompt"]').value = defaultSystemPrompt;
+  }
+}
+</script>
+
+<!-- <%- include('../partials/footer') %>  -->

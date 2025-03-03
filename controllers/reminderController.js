@@ -235,23 +235,11 @@ class ReminderController {
     Reminder.delete(id, (err) => {
       if (err) {
         console.error('Lỗi khi xóa nhắc nhở:', err);
-        if (req.xhr) {
-          return res.status(500).json({ success: false, message: 'Lỗi khi xóa nhắc nhở' });
-        } else {
-          req.flash('error_msg', 'Lỗi khi xóa nhắc nhở');
-          return res.redirect('/reminders');
-        }
-      }
-      
-      // Loại bỏ lịch trình từ scheduler
-      schedulerService.removeJob(`reminder_${id}`);
-      
-      if (req.xhr) {
-        return res.json({ success: true, message: 'Đã xóa nhắc nhở thành công' });
+        req.flash('error_msg', 'Không thể xóa nhắc nhở. Vui lòng thử lại.');
       } else {
         req.flash('success_msg', 'Đã xóa nhắc nhở thành công');
-        return res.redirect('/reminders');
       }
+      res.redirect('/reminders');
     });
   }
 
