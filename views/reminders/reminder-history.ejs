@@ -1,0 +1,88 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1>Lịch sử gửi email: <%= reminder.title %></h1>
+        <a href="/reminders/history" class="btn btn-secondary">Quay lại lịch sử</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Thông tin nhắc nhở</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>ID:</strong> <%= reminder.id %></p>
+              <p><strong>Tiêu đề:</strong> <%= reminder.title %></p>
+              <p><strong>Người nhận:</strong> <%= reminder.recipient_name %> (<%= reminder.recipient_email %>)</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Cấu hình AI:</strong> <%= reminder.ai_config_name || 'Không sử dụng' %></p>
+              <p><strong>Trạng thái:</strong> 
+                <% if(reminder.active) { %>
+                  <span class="badge bg-success">Đang hoạt động</span>
+                <% } else { %>
+                  <span class="badge bg-secondary">Không hoạt động</span>
+                <% } %>
+              </p>
+              <p><strong>Lịch gửi:</strong> <%= reminder.schedule %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h5>Lịch sử gửi</h5>
+        </div>
+        <div class="card-body">
+          <% if (history && history.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Người nhận</th>
+                    <th>Thời gian gửi</th>
+                    <th>Trạng thái</th>
+                    <th>Lỗi (nếu có)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% history.forEach(record => { %>
+                    <tr>
+                      <td><%= record.id %></td>
+                      <td><%= record.recipient_email || 'Không có email' %></td>
+                      <td><%= new Date(record.sent_at).toLocaleString('vi-VN') %></td>
+                      <td>
+                        <% if (record.status === 'success') { %>
+                          <span class="badge bg-success">Thành công</span>
+                        <% } else { %>
+                          <span class="badge bg-danger">Thất bại</span>
+                        <% } %>
+                      </td>
+                      <td><%= record.error || '' %></td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">
+              Chưa có lịch sử gửi email nào cho nhắc nhở này.
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 
