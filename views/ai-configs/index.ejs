@@ -1,0 +1,60 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Quản lý cấu hình AI</h1>
+      <a href="/ai-configs/create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Thêm cấu hình mới
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <% if (configs && configs.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Tên cấu hình</th>
+                  <th>Mô tả</th>
+                  <th>Giọng điệu</th>
+                  <th>Ngôn ngữ</th>
+                  <th>Temperature</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% configs.forEach(config => { %>
+                  <tr>
+                    <td><%= config.name %></td>
+                    <td><%= config.description || '-' %></td>
+                    <td><%= config.tone %></td>
+                    <td><%= config.language %></td>
+                    <td><%= config.temperature %></td>
+                    <td class="action-buttons">
+                      <a href="/ai-configs/edit/<%= config.id %>" class="btn btn-sm btn-info">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form action="/ai-configs/delete/<%= config.id %>" method="POST" class="d-inline delete-confirm">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">
+            Chưa có cấu hình AI nào. Hãy <a href="/ai-configs/create">tạo cấu hình mới</a>.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div> 

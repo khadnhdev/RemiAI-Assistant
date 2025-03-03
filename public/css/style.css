@@ -1,0 +1,100 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+}
+
+.form-control:focus, .form-select:focus, .btn:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.nav-link.active {
+  font-weight: bold;
+}
+
+.card-header h3, .card-header h5 {
+  margin-bottom: 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.status-badge {
+  font-size: 0.85rem;
+}
+
+.status-badge.sent {
+  background-color: #28a745;
+}
+
+.status-badge.failed {
+  background-color: #dc3545;
+}
+
+.card-dashboard {
+  transition: transform 0.3s;
+}
+
+.card-dashboard:hover {
+  transform: translateY(-5px);
+}
+
+.action-buttons .btn {
+  margin-right: 5px;
+}
+
+.action-buttons .btn:last-child {
+  margin-right: 0;
+}
+
+/* Custom form styles */
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+}
+
+.form-section-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.custom-attributes-container {
+  margin-top: 1rem;
+}
+
+.attribute-row {
+  margin-bottom: 0.5rem;
+}
+
+.add-attribute-btn {
+  margin-top: 0.5rem;
+}
+
+/* Schedule form styles */
+.schedule-options {
+  margin-top: 1rem;
+}
+
+.schedule-option {
+  display: none;
+}
+
+.schedule-option.active {
+  display: block;
+} 

@@ -1,0 +1,10 @@
+Tên ứng dụng: AI Reminder Mail
+
+Tính năng chính:
+
+Quản lý người nhận.
+Tạo nội dung email tự động bằng AI với khả năng cá nhân hóa theo từng người nhận và cấu hình AI theo từng mục đích nhắc nhở.
+Cấu hình lịch nhắc nhở linh hoạt, cho phép gửi email liên tục, mỗi ngày, mỗi ngày trong tuần hoặc dừng sau một số lần cụ thể.
+Lưu trữ lịch sử email đã gửi, bao gồm nội dung email, trạng thái gửi.
+Cấu hình nội dung nhắc nhở cho từng AI, cho phép admin tạo nhiều AI với giọng điệu và nội dung khác nhau tùy theo loại khách hàng và mục đích nhắc nhở.
+mật khẩu admin sẽ lưu trong file .env

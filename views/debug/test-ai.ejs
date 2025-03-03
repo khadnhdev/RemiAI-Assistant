@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Kiểm tra kết nối AI</h1>
+      <a href="/dashboard" class="btn btn-secondary">Quay lại</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Trạng thái cấu hình</h5>
+        <p><strong>Gemini API Key:</strong> <%= apiKey %></p>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Kiểm tra API Gemini</h5>
+        <form action="/debug/test-ai" method="POST">
+          <div class="mb-3">
+            <label for="prompt" class="form-label">Nhập prompt để thử nghiệm</label>
+            <textarea class="form-control" id="prompt" name="prompt" rows="3" required><%= locals.prompt || 'Xin chào, tôi là người dùng ứng dụng nhắc nhở email của bạn. Hãy giới thiệu về bản thân bạn.' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Kiểm tra API</button>
+        </form>
+        
+        <% if (locals.response) { %>
+          <div class="mt-4">
+            <h5>Phản hồi từ AI:</h5>
+            <div class="card bg-light">
+              <div class="card-body">
+                <pre class="mb-0" style="white-space: pre-wrap;"><%= response %></pre>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div> 

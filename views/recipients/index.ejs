@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Quản lý người nhận</h1>
+      <a href="/recipients/create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Thêm người nhận mới
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <% if (recipients && recipients.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Tên</th>
+                  <th>Email</th>
+                  <th>Thuộc tính tùy chỉnh</th>
+                  <th>Thời gian tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recipients.forEach(recipient => { %>
+                  <tr>
+                    <td><%= recipient.name %></td>
+                    <td><%= recipient.email %></td>
+                    <td>
+                      <% if (recipient.custom_attributes) { %>
+                        <% 
+                          try {
+                            const attributes = JSON.parse(recipient.custom_attributes);
+                            const attrString = Object.entries(attributes)
+                              .map(([key, value]) => `${key}: ${value}`)
+                              .join(', ');
+                          %>
+                            <%= attrString || '-' %>
+                          <% } catch (e) { %>
+                            <span class="text-danger">Định dạng không hợp lệ</span>
+                          <% } %>
+                      <% } else { %>
+                        -
+                      <% } %>
+                    </td>
+                    <td><%= new Date(recipient.created_at).toLocaleString() %></td>
+                    <td class="action-buttons">
+                      <a href="/recipients/edit/<%= recipient.id %>" class="btn btn-sm btn-info">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <form action="/recipients/delete/<%= recipient.id %>" method="POST" class="d-inline delete-confirm">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">
+            Chưa có người nhận nào. Hãy <a href="/recipients/create">thêm người nhận mới</a>.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div> 

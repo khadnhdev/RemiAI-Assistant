@@ -1,0 +1,110 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Thêm cấu hình AI mới</h1>
+      <a href="/ai-configs" class="btn btn-secondary">Quay lại</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="/ai-configs/create" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Tên cấu hình</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Mô tả</label>
+            <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label for="language" class="form-label">Ngôn ngữ</label>
+            <input type="text" class="form-control" id="language" name="language" value="Vietnamese" required>
+          </div>
+          
+          <!-- Mô hình AI được thiết lập mặc định -->
+          <input type="hidden" id="ai_model" name="ai_model" value="gemini-2.0-flash">
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="tone" class="form-label">Giọng điệu</label>
+                <select class="form-select" id="tone" name="tone">
+                  <option value="professional">Chuyên nghiệp</option>
+                  <option value="friendly">Thân thiện</option>
+                  <option value="casual">Suồng sã</option>
+                  <option value="formal">Trang trọng</option>
+                  <option value="urgent">Khẩn cấp</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="prompt_template" class="form-label">Mẫu nhắc nhở</label>
+            <div class="form-text mb-2">
+              Sử dụng các biến {name}, {email} và các thuộc tính tùy chỉnh khác như {company}, {dueDate}, v.v. Các biến này sẽ được thay thế bằng dữ liệu thực của người nhận.
+            </div>
+            <textarea class="form-control" id="prompt_template" name="prompt_template" rows="10" required></textarea>
+          </div>
+          
+          <div class="form-section mt-4">
+            <h5 class="form-section-title">Cấu hình nâng cao</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="temperature" class="form-label">Temperature</label>
+                  <input type="number" class="form-control" id="temperature" name="temperature" 
+                         min="0" max="1" step="0.1" value="0.7">
+                  <div class="form-text">
+                    Điều chỉnh mức độ sáng tạo của văn bản (0-1). Giá trị thấp hơn mang lại kết quả chặt chẽ hơn, giá trị cao hơn sẽ đa dạng hơn.
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="max_output_tokens" class="form-label">Số lượng token tối đa</label>
+                  <input type="number" class="form-control" id="max_output_tokens" name="max_output_tokens" 
+                         min="1" max="8192" step="1" value="1024">
+                  <div class="form-text">
+                    Giới hạn số lượng token (đơn vị từ) tối đa cho mỗi phản hồi.
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="top_p" class="form-label">Top P</label>
+                  <input type="number" class="form-control" id="top_p" name="top_p" 
+                         min="0" max="1" step="0.01" value="0.95">
+                  <div class="form-text">
+                    Giới hạn các lựa chọn từ tiếp theo theo xác suất tích lũy (0-1).
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="top_k" class="form-label">Top K</label>
+                  <input type="number" class="form-control" id="top_k" name="top_k" 
+                         min="1" max="100" step="1" value="40">
+                  <div class="form-text">
+                    Giới hạn số lượng từ tiếp theo có khả năng cao nhất được xem xét.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Lưu cấu hình</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> 

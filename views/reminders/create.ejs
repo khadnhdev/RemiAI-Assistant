@@ -1,0 +1,265 @@
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Tạo nhắc nhở mới</h1>
+      <a href="/reminders" class="btn btn-secondary">Quay lại</a>
+    </div>
+  </div>
+</div>
+
+<!-- Thông báo debug -->
+<div id="debug-alert" class="alert alert-info" style="display: none;">
+  <h5>Thông tin debug:</h5>
+  <pre id="debug-output"></pre>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="/reminders/create" method="POST">
+          <div class="mb-3">
+            <label for="title" class="form-label">Tiêu đề</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="recipient_id" class="form-label">Người nhận</label>
+            <select class="form-select" id="recipient_id" name="recipient_id" required>
+              <option value="">-- Chọn người nhận --</option>
+              <% if (recipients && recipients.length > 0) { %>
+                <% recipients.forEach(recipient => { %>
+                  <option value="<%= recipient.id %>"><%= recipient.name %> (<%= recipient.email %>)</option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="ai_config_id" class="form-label">Cấu hình AI</label>
+            <select class="form-select" id="ai_config_id" name="ai_config_id">
+              <option value="">-- Không sử dụng AI --</option>
+              <% if (aiConfigs && aiConfigs.length > 0) { %>
+                <% aiConfigs.forEach(config => { %>
+                  <option value="<%= config.id %>"><%= config.name %></option>
+                <% }); %>
+              <% } %>
+            </select>
+            <div class="form-text">
+              Chọn cấu hình AI nếu bạn muốn tự động tạo nội dung email.
+            </div>
+          </div>
+          
+          <div class="mb-3 content-field">
+            <label for="content" class="form-label">Nội dung</label>
+            <textarea class="form-control" id="content" name="content" rows="5"></textarea>
+            <div class="form-text">
+              Bạn có thể nhập trực tiếp nội dung email hoặc để trống nếu sử dụng AI.
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="schedule" class="form-label">Lịch gửi (Cron)</label>
+            <div class="card p-3 mt-2">
+              <div class="form-group mb-3">
+                <label for="schedule_type" class="form-label">Tần suất</label>
+                <select class="form-select" id="schedule_type" name="schedule_type" required>
+                  <option value="daily">Hàng ngày</option>
+                  <option value="weekly">Hàng tuần</option>
+                  <option value="monthly">Hàng tháng</option>
+                </select>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group mb-3">
+                    <label for="hour" class="form-label">Giờ</label>
+                    <select class="form-select" id="hour" name="hour" required>
+                      <% for(let h=0; h<24; h++) { %>
+                        <option value="<%= h %>" <%= h === 9 ? 'selected' : '' %>><%= h %>:00</option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group mb-3">
+                    <label for="minute" class="form-label">Phút</label>
+                    <select class="form-select" id="minute" name="minute" required>
+                      <% for(let m=0; m<60; m+=5) { %>
+                        <option value="<%= m %>" <%= m === 0 ? 'selected' : '' %>><%= m.toString().padStart(2, '0') %></option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="weekly_options" class="form-group mb-3" style="display: none;">
+                <label for="day" class="form-label">Ngày trong tuần</label>
+                <select class="form-select" id="day" name="day">
+                  <option value="1">Thứ Hai</option>
+                  <option value="2">Thứ Ba</option>
+                  <option value="3">Thứ Tư</option>
+                  <option value="4">Thứ Năm</option>
+                  <option value="5">Thứ Sáu</option>
+                  <option value="6">Thứ Bảy</option>
+                  <option value="0">Chủ Nhật</option>
+                </select>
+              </div>
+              
+              <div id="monthly_options" class="form-group mb-3" style="display: none;">
+                <label for="date" class="form-label">Ngày trong tháng</label>
+                <select class="form-select" id="date" name="date">
+                  <% for(let d=1; d<=31; d++) { %>
+                    <option value="<%= d %>"><%= d %></option>
+                  <% } %>
+                </select>
+              </div>
+            </div>
+            <div class="form-text mt-2">
+              Thời gian gửi email sẽ được tự động chuyển đổi thành cú pháp cron.
+            </div>
+          </div>
+          
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="active" name="active" value="1" checked>
+            <label class="form-check-label" for="active">Hoạt động</label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Lưu nhắc nhở</button>
+          <button type="button" id="debug-submit" class="btn btn-warning">
+            Debug - Gửi với Fetch API
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ẩn/hiện trường nội dung dựa trên việc chọn cấu hình AI
+  document.addEventListener('DOMContentLoaded', function() {
+    const aiConfigSelect = document.getElementById('ai_config_id');
+    const contentField = document.querySelector('.content-field');
+    
+    function toggleContentField() {
+      if (aiConfigSelect.value) {
+        contentField.style.display = 'none';
+      } else {
+        contentField.style.display = 'block';
+      }
+    }
+    
+    aiConfigSelect.addEventListener('change', toggleContentField);
+    toggleContentField(); // Chạy khi tải trang
+
+    // Begin form debug code
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+      // Log form data
+      console.log('Form submission:');
+      const formData = new FormData(form);
+      const formObject = {};
+      formData.forEach((value, key) => {
+        formObject[key] = value;
+        console.log(`${key}: ${value}`);
+      });
+      
+      // Verify required fields
+      const requiredFields = ['title', 'recipient_id', 'schedule_type', 'hour', 'minute'];
+      const missingFields = requiredFields.filter(field => !formData.get(field));
+      
+      if (missingFields.length > 0) {
+        console.error('Missing required fields:', missingFields);
+        alert('Thiếu thông tin bắt buộc: ' + missingFields.join(', '));
+        event.preventDefault();
+        return false;
+      }
+      
+      // Generate and add schedule field
+      const hour = formData.get('hour') || 9;
+      const minute = formData.get('minute') || 0;
+      const scheduleType = formData.get('schedule_type') || 'daily';
+      
+      let schedule = `${minute} ${hour}`;
+      
+      if (scheduleType === 'daily') {
+        schedule += ' * * *';
+      } else if (scheduleType === 'weekly') {
+        const day = formData.get('day') || 1;
+        schedule += ` * * ${day}`;
+      } else if (scheduleType === 'monthly') {
+        const date = formData.get('date') || 1;
+        schedule += ` ${date} * *`;
+      }
+      
+      // Add hidden schedule field dynamically
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'schedule';
+      hiddenInput.value = schedule;
+      form.appendChild(hiddenInput);
+      
+      console.log('Generated schedule:', schedule);
+      console.log('Form submission allowed to proceed');
+    });
+    // End form debug code
+
+    // Hàm hiển thị debug
+    function showDebug(message, isError = false) {
+      const debugAlert = document.getElementById('debug-alert');
+      const debugOutput = document.getElementById('debug-output');
+      
+      debugAlert.style.display = 'block';
+      debugAlert.className = isError ? 'alert alert-danger' : 'alert alert-info';
+      
+      if (typeof message === 'object') {
+        debugOutput.textContent = JSON.stringify(message, null, 2);
+      } else {
+        debugOutput.textContent = message;
+      }
+      
+      console.log(message);
+    }
+    
+    // Khi click nút debug
+    document.getElementById('debug-submit').addEventListener('click', async function() {
+      try {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+        
+        // Convert to object
+        const data = {};
+        formData.forEach((value, key) => { data[key] = value; });
+        
+        // Generate schedule
+        const hour = data.hour || 9;
+        const minute = data.minute || 0;
+        data.schedule = `${minute} ${hour} * * *`;
+        
+        showDebug("Đang gửi dữ liệu: " + JSON.stringify(data, null, 2));
+        
+        // Send using fetch API
+        const response = await fetch('/reminders/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.text();
+        
+        if (response.ok) {
+          showDebug("Gửi thành công. Đang chuyển hướng...");
+          setTimeout(() => {
+            window.location.href = '/reminders';
+          }, 2000);
+        } else {
+          showDebug("Lỗi: " + result, true);
+        }
+      } catch (error) {
+        showDebug("Lỗi: " + error.message, true);
+      }
+    });
+  });
+</script> 

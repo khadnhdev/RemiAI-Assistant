@@ -1,0 +1,98 @@
+<div class="row">
+  <div class="col-12">
+    <h1 class="mb-4">Bảng điều khiển</h1>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Thống kê -->
+  <div class="col-md-3">
+    <div class="card text-white bg-primary mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Tổng số người nhận</h5>
+        <p class="card-text display-4"><%= stats.totalRecipients %></p>
+        <a href="/recipients" class="text-white">Xem danh sách <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-white bg-success mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Cấu hình AI</h5>
+        <p class="card-text display-4"><%= stats.totalAiConfigs %></p>
+        <a href="/ai-configs" class="text-white">Quản lý cấu hình <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-white bg-info mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Nhắc nhở hiện có</h5>
+        <p class="card-text display-4"><%= stats.totalReminders %></p>
+        <a href="/reminders" class="text-white">Quản lý nhắc nhở <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-white bg-warning mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Email đã gửi</h5>
+        <p class="card-text display-4"><%= stats.totalEmailsSent %></p>
+        <a href="/reminders/history" class="text-white">Xem lịch sử <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Email gần đây -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Email đã gửi gần đây</h5>
+      </div>
+      <div class="card-body">
+        <% if (recentEmails && recentEmails.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Nhắc nhở</th>
+                  <th>Người nhận</th>
+                  <th>Tiêu đề</th>
+                  <th>Trạng thái</th>
+                  <th>Thời gian gửi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentEmails.forEach(email => { %>
+                  <tr>
+                    <td><%= email.reminder_title || 'N/A' %></td>
+                    <td><%= email.recipient_name %> (<%= email.recipient_email %>)</td>
+                    <td><%= email.subject %></td>
+                    <td>
+                      <% if (email.success) { %>
+                        <span class="badge bg-success">Thành công</span>
+                      <% } else { %>
+                        <span class="badge bg-danger">Thất bại</span>
+                      <% } %>
+                    </td>
+                    <td><%= new Date(email.sent_at).toLocaleString() %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          <a href="/reminders/history" class="btn btn-outline-primary">Xem tất cả</a>
+        <% } else { %>
+          <div class="alert alert-info">
+            Chưa có email nào được gửi.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div> 

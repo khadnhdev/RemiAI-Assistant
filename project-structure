@@ -1,0 +1,56 @@
+ai-reminder-mail/
+├── config/
+│   └── database.js
+├── controllers/
+│   ├── adminController.js
+│   ├── aiConfigController.js
+│   ├── recipientController.js
+│   └── reminderController.js
+├── middleware/
+│   └── authMiddleware.js
+├── models/
+│   ├── AIConfig.js
+│   ├── Recipient.js
+│   ├── Reminder.js
+│   └── EmailHistory.js
+├── public/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── main.js
+├── routes/
+│   ├── adminRoutes.js
+│   ├── aiConfigRoutes.js
+│   ├── recipientRoutes.js 
+│   └── reminderRoutes.js
+├── services/
+│   ├── aiService.js
+│   ├── emailService.js
+│   └── schedulerService.js
+├── utils/
+│   └── helpers.js
+├── views/
+│   ├── layouts/
+│   │   └── main.ejs
+│   ├── partials/
+│   │   ├── header.ejs
+│   │   └── footer.ejs
+│   ├── admin/
+│   │   ├── login.ejs
+│   │   └── dashboard.ejs
+│   ├── recipients/
+│   │   ├── index.ejs
+│   │   ├── create.ejs
+│   │   └── edit.ejs
+│   ├── ai-configs/
+│   │   ├── index.ejs
+│   │   ├── create.ejs
+│   │   └── edit.ejs
+│   └── reminders/
+│       ├── index.ejs
+│       ├── create.ejs
+│       └── history.ejs
+├── .env
+├── app.js
+├── package.json
+└── README.md 

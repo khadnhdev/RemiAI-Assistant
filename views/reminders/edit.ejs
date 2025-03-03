@@ -1,0 +1,225 @@
+<div class="row">
+  <script>
+    // Debug information
+    console.log("Reminder data:", <%= JSON.stringify(reminder) %>);
+  </script>
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Chỉnh sửa nhắc nhở</h1>
+      <a href="/reminders" class="btn btn-secondary">Quay lại</a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="/reminders/edit/<%= reminder.id %>" method="POST">
+          <% console.log('Form action URL:', `/reminders/edit/${reminder.id}`) %>
+          <div class="mb-3">
+            <label for="title" class="form-label">Tiêu đề</label>
+            <input type="text" class="form-control" id="title" name="title" value="<%= reminder.title %>" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="recipient_id" class="form-label">Người nhận</label>
+            <select class="form-select" id="recipient_id" name="recipient_id" required>
+              <option value="">-- Chọn người nhận --</option>
+              <% if (recipients && recipients.length > 0) { %>
+                <% 
+                  // Kiểm tra xem recipient_id có tồn tại trong danh sách không
+                  let recipientExists = false;
+                  if (reminder.recipient_id) {
+                    recipientExists = recipients.some(r => r.id == reminder.recipient_id);
+                  }
+                %>
+                <% if (reminder.recipient_id && !recipientExists) { %>
+                  <div class="alert alert-warning mt-2">
+                    Người nhận đã chọn (ID: <%= reminder.recipient_id %>) không còn tồn tại trong hệ thống!
+                  </div>
+                <% } %>
+                <% recipients.forEach(recipient => { %>
+                  <option value="<%= recipient.id %>" <%= (reminder.recipient_id == recipient.id) ? 'selected' : '' %>>
+                    <%= recipient.name %> (<%= recipient.email %>)
+                  </option>
+                <% }); %>
+              <% } %>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="ai_config_id" class="form-label">Cấu hình AI</label>
+            <select class="form-select" id="ai_config_id" name="ai_config_id">
+              <option value="">-- Không sử dụng AI --</option>
+              <% if (aiConfigs && aiConfigs.length > 0) { %>
+                <% aiConfigs.forEach(config => { %>
+                  <option value="<%= config.id %>" <%= reminder.ai_config_id == config.id ? 'selected' : '' %>>
+                    <%= config.name %>
+                  </option>
+                <% }); %>
+              <% } %>
+            </select>
+            <div class="form-text">
+              Chọn cấu hình AI nếu bạn muốn tự động tạo nội dung email.
+            </div>
+          </div>
+          
+          <div class="mb-3 content-field">
+            <label for="content" class="form-label">Nội dung</label>
+            <textarea class="form-control" id="content" name="content" rows="5"><%= reminder.content || '' %></textarea>
+            <div class="form-text">
+              Bạn có thể nhập trực tiếp nội dung email hoặc để trống nếu sử dụng AI.
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="schedule" class="form-label">Lịch gửi (Cron)</label>
+            <div class="card p-3 mt-2">
+              <div class="form-group mb-3">
+                <label for="schedule_type" class="form-label">Tần suất</label>
+                <select class="form-select" id="schedule_type" name="schedule_type" required>
+                  <option value="daily" <%= reminder.schedule_type === 'daily' ? 'selected' : '' %>>Hàng ngày</option>
+                  <option value="weekly" <%= reminder.schedule_type === 'weekly' ? 'selected' : '' %>>Hàng tuần</option>
+                  <option value="monthly" <%= reminder.schedule_type === 'monthly' ? 'selected' : '' %>>Hàng tháng</option>
+                </select>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group mb-3">
+                    <label for="hour" class="form-label">Giờ</label>
+                    <select class="form-select" id="hour" name="hour" required>
+                      <% for(let h=0; h<24; h++) { %>
+                        <option value="<%= h %>" <%= h == (reminder.schedule_data?.hour || 9) ? 'selected' : '' %>><%= h %>:00</option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group mb-3">
+                    <label for="minute" class="form-label">Phút</label>
+                    <select class="form-select" id="minute" name="minute" required>
+                      <% for(let m=0; m<60; m+=5) { %>
+                        <option value="<%= m %>" <%= m == (reminder.schedule_data?.minute || 0) ? 'selected' : '' %>><%= m.toString().padStart(2, '0') %></option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div id="weekly_options" class="form-group mb-3" style="display: <%= reminder.schedule_type === 'weekly' ? 'block' : 'none' %>;">
+                <label for="day" class="form-label">Ngày trong tuần</label>
+                <select class="form-select" id="day" name="day">
+                  <option value="1" <%= (reminder.schedule_data?.day || 1) == 1 ? 'selected' : '' %>>Thứ Hai</option>
+                  <option value="2" <%= (reminder.schedule_data?.day || 1) == 2 ? 'selected' : '' %>>Thứ Ba</option>
+                  <option value="3" <%= (reminder.schedule_data?.day || 1) == 3 ? 'selected' : '' %>>Thứ Tư</option>
+                  <option value="4" <%= (reminder.schedule_data?.day || 1) == 4 ? 'selected' : '' %>>Thứ Năm</option>
+                  <option value="5" <%= (reminder.schedule_data?.day || 1) == 5 ? 'selected' : '' %>>Thứ Sáu</option>
+                  <option value="6" <%= (reminder.schedule_data?.day || 1) == 6 ? 'selected' : '' %>>Thứ Bảy</option>
+                  <option value="0" <%= (reminder.schedule_data?.day || 1) == 0 ? 'selected' : '' %>>Chủ Nhật</option>
+                </select>
+              </div>
+              
+              <div id="monthly_options" class="form-group mb-3" style="display: <%= reminder.schedule_type === 'monthly' ? 'block' : 'none' %>;">
+                <label for="date" class="form-label">Ngày trong tháng</label>
+                <select class="form-select" id="date" name="date">
+                  <% for(let d=1; d<=31; d++) { %>
+                    <option value="<%= d %>" <%= d == (reminder.schedule_data?.date || 1) ? 'selected' : '' %>><%= d %></option>
+                  <% } %>
+                </select>
+              </div>
+              
+            </div>
+            <div class="form-text mt-2">
+              Thời gian gửi email sẽ được tự động chuyển đổi thành cú pháp cron.
+            </div>
+          </div>
+          
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="active" name="active" value="1" 
+                    <%= reminder.active ? 'checked' : '' %>>
+            <label class="form-check-label" for="active">Hoạt động</label>
+          </div>
+          
+          <input type="hidden" id="schedule" name="schedule" value="<%= reminder.schedule %>">
+          
+          <button type="submit" class="btn btn-primary">Cập nhật nhắc nhở</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Hàm tạo schedule dựa trên đầu vào
+  function generateSchedule() {
+    const scheduleType = document.getElementById('schedule_type').value;
+    const hour = document.getElementById('hour').value;
+    const minute = document.getElementById('minute').value;
+    
+    let schedule = `${minute} ${hour}`;
+    
+    if (scheduleType === 'daily') {
+      schedule += ' * * *';
+    } else if (scheduleType === 'weekly') {
+      const day = document.getElementById('day').value;
+      schedule += ` * * ${day}`;
+    } else if (scheduleType === 'monthly') {
+      const date = document.getElementById('date').value;
+      schedule += ` ${date} * *`;
+    }
+    
+    return schedule;
+  }
+  
+  // Ẩn/hiện trường nội dung dựa trên việc chọn cấu hình AI
+  document.addEventListener('DOMContentLoaded', function() {
+    const aiConfigSelect = document.getElementById('ai_config_id');
+    const contentField = document.querySelector('.content-field');
+    
+    function toggleContentField() {
+      if (aiConfigSelect.value) {
+        contentField.style.display = 'none';
+      } else {
+        contentField.style.display = 'block';
+      }
+    }
+    
+    aiConfigSelect.addEventListener('change', toggleContentField);
+    toggleContentField(); // Chạy khi tải trang
+    
+    // Cập nhật schedule khi form submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      // Xử lý checkbox active
+      const activeCheckbox = document.getElementById('active');
+      const activeValue = activeCheckbox.checked ? 1 : 0;
+      
+      // Xoá tất cả các input hidden name="active" hiện có
+      this.querySelectorAll('input[type="hidden"][name="active"]').forEach(el => el.remove());
+      
+      // Nếu checkbox không được check, thêm input hidden gửi giá trị 0
+      if (!activeCheckbox.checked) {
+        const activeField = document.createElement('input');
+        activeField.type = 'hidden';
+        activeField.name = 'active';
+        activeField.value = '0';
+        this.appendChild(activeField);
+      }
+      
+      // Show debug info
+      console.log('Form đang được gửi...');
+      console.log('Dữ liệu form:', {
+        title: document.getElementById('title').value,
+        recipient_id: document.getElementById('recipient_id').value,
+        ai_config_id: document.getElementById('ai_config_id').value,
+        schedule_type: document.getElementById('schedule_type').value,
+        active: activeValue
+      });
+      
+      const scheduleInput = document.getElementById('schedule');
+      scheduleInput.value = generateSchedule();
+      console.log('Schedule generated:', scheduleInput.value);
+    });
+  });
+</script> 
