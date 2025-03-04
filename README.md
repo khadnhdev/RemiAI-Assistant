@@ -30,8 +30,8 @@ Remin AI là một ứng dụng web giúp tự động hóa việc gửi email n
 
 1. Clone repository:
 ```bash
-[git clone https://github.com/yourusername/remin-ai.git](https://github.com/khadnhdev/RemiAI-Assistant.git)
-cd remin-ai
+git clone https://github.com/khadnhdev/RemiAI-Assistant.git
+cd RemiAI-Assistant
 ```
 
 2. Cài đặt dependencies:
