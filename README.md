@@ -89,7 +89,7 @@ npm start
 
 ## Tác Giả
 
-[Your Name]
+[Kha Dang]
 
 ## License
 
